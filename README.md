@@ -1,29 +1,13 @@
-# README #
+# Toolchains
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## AVR
+Toolchain for AVR CPUs is available in `avr-gcc.cmake`
 
-### What is this repository for? ###
+###	Extra functions
+>	`avr_configure(` Project `CPU` `SPEED` `)`
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+`CPU` defines the chip to program for (eg atmega328p).
+`SPEED` defines the clock speed of the chip - used by peripherals
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+>	`avr_upload(` Project `PORT` `BAUD` `)`
+`PORT` defines the serial port to use during uploading. `BAUD` specifies the serial port speed to use for uploading.
