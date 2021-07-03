@@ -35,6 +35,13 @@ function(avr_configure PROJECT_NAME MCU_NAME CPU_SPEED)
 			"F_CPU=${CPU_FREQ}"
 	)
 
+	target_link_options(
+		${PROJECT_NAME}
+		PRIVATE
+			"-mmcu=${MCU}"
+			"-Wl,--gc-sections"
+	)
+
 	set_target_properties(
 		${PROJECT_NAME}
 		PROPERTIES
