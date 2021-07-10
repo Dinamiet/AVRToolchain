@@ -17,40 +17,35 @@ set(CMAKE_SYSTEM_PROCESSOR avr)
 set(CMAKE_C_COMPILER ${AVR_CC})
 set(CMAKE_CXX_COMPILER ${AVR_CXX})
 
-function(avr_configure PROJECT_NAME MCU_NAME CPU_SPEED)
+function(avr_configure MCU_NAME CPU_SPEED)
 	set(MCU ${MCU_NAME} CACHE INTERNAL "CPU Type")
 	set(CPU_FREQ ${CPU_SPEED} CACHE INTERNAL "CPU Frequency")
-	set(ELF ${PROJECT_NAME}.elf CACHE INTERNAL "ELF file name")
-	set(HEX ${PROJECT_NAME}.hex CACHE INTERNAL "HEX file name")
 
-	target_compile_options(
-		${PROJECT_NAME}
-		PRIVATE
-			"-mmcu=${MCU}"
+	add_compile_options(
+		"-mmcu=${MCU}"
 	)
 
-	target_compile_definitions(
-		${PROJECT_NAME}
-		PRIVATE
-			"F_CPU=${CPU_FREQ}"
+	add_compile_definitions(
+		"F_CPU=${CPU_FREQ}"
 	)
 
-	target_link_options(
-		${PROJECT_NAME}
-		PRIVATE
-			"-mmcu=${MCU}"
-			"-Wl,--gc-sections"
-	)
-
-	set_target_properties(
-		${PROJECT_NAME}
-		PROPERTIES
-			OUTPUT_NAME ${ELF}
+	add_link_options(
+		"-mmcu=${MCU}"
+		"-Wl,--gc-sections"
 	)
 
 endfunction()
 
-function(avr_upload PROJECT_NAME PORT BAUD)
+function(avr_upload TARGET PORT BAUD)
+	set(ELF ${TARGET}.elf CACHE INTERNAL "ELF file name")
+	set(HEX ${TARGET}.hex CACHE INTERNAL "HEX file name")
+
+	set_target_properties(
+		${TARGET}
+		PROPERTIES
+			OUTPUT_NAME ${ELF}
+	)
+
 	add_custom_command(
 		OUTPUT ${HEX}
 		COMMAND
