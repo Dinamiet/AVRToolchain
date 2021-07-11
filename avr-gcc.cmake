@@ -58,7 +58,6 @@ function(avr_upload TARGET PORT BAUD)
 
 	add_custom_target(
 		upload
-		ALL
 		COMMAND
 			${AVR_UPLOADTOOL} -l upload.log -D -p ${MCU} -c arduino -P ${PORT} -b ${BAUD} -U flash:w:${HEX}
 		DEPENDS ${HEX}
