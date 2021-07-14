@@ -14,8 +14,8 @@ find_program(AVR_UPLOADTOOL avrdude REQUIRED)
 ##########################################################################
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR avr)
-set(CMAKE_C_COMPILER ${AVR_CC})
-set(CMAKE_CXX_COMPILER ${AVR_CXX})
+# set(CMAKE_C_COMPILER ${AVR_CC})
+# set(CMAKE_CXX_COMPILER ${AVR_CXX})
 
 function(avr_configure MCU_NAME CPU_SPEED)
 	set(MCU ${MCU_NAME} CACHE INTERNAL "CPU Type")
@@ -31,7 +31,6 @@ function(avr_configure MCU_NAME CPU_SPEED)
 
 	add_link_options(
 		"-mmcu=${MCU}"
-		"-Wl,--gc-sections"
 	)
 
 endfunction()
