@@ -45,21 +45,22 @@ function(avr_upload TARGET PORT BAUD)
 			OUTPUT_NAME ${ELF}
 	)
 
-	add_custom_command(
-		OUTPUT ${HEX}
+	add_custom_target(
+		Size
 		COMMAND
 			${AVR_OBJCOPY} -j .text -j .data -O ihex ${ELF} ${HEX}
 		COMMAND
 			${AVR_SIZE_TOOL} -C;--mcu=${MCU} ${ELF} | grep -vE "\"^\\(|^$$\""
 		DEPENDS ${ELF}
-		COMMENT "Uploading"
+		BYPRODUCTS ${HEX}
+		COMMENT "ELF -> HEX Done"
 	)
 
 	add_custom_target(
-		upload
+		Upload
 		COMMAND
 			${AVR_UPLOADTOOL} -l upload.log -D -p ${MCU} -c arduino -P ${PORT} -b ${BAUD} -U flash:w:${HEX}
 		DEPENDS ${HEX}
-		COMMENT "Done"
+		COMMENT "Upload Done"
 	)
 endfunction()
