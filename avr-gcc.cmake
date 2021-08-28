@@ -46,7 +46,7 @@ function(avr_upload TARGET PORT BAUD)
 	)
 
 	add_custom_target(
-		Size
+		Size_${TARGET}
 		COMMAND
 			${AVR_OBJCOPY} -j .text -j .data -O ihex ${ELF} ${HEX}
 		COMMAND
@@ -57,7 +57,7 @@ function(avr_upload TARGET PORT BAUD)
 	)
 
 	add_custom_target(
-		Upload
+		Upload_${TARGET}
 		COMMAND
 			${AVR_UPLOADTOOL} -l upload.log -D -p ${MCU} -c arduino -P ${PORT} -b ${BAUD} -U flash:w:${HEX}
 		DEPENDS ${HEX}
