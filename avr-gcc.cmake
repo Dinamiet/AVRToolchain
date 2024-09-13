@@ -1,45 +1,56 @@
 ##########################################################################
-# Executables in use
-##########################################################################
-find_program(AVR_CC avr-gcc REQUIRED)
-find_program(AVR_CXX avr-g++ REQUIRED)
-find_program(AVR_OBJCOPY avr-objcopy REQUIRED)
-find_program(AVR_SIZE_TOOL avr-size REQUIRED)
-find_program(AVR_OBJDUMP avr-objdump REQUIRED)
-find_program(AVR_UPLOADTOOL avrdude REQUIRED)
-
-
-##########################################################################
-# Define CMake System
+# Name of target and processor architecture
 ##########################################################################
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR avr)
-# set(CMAKE_C_COMPILER ${AVR_CC})
-# set(CMAKE_CXX_COMPILER ${AVR_CXX})
 
-function(avr_configure MCU_NAME CPU_SPEED)
+##########################################################################
+# Find toolchain binaries
+##########################################################################
+find_program(CMAKE_CXX_COMPILER "avr-g++" REQUIRED)
+find_program(CMAKE_CXX_COMPILER_AR "avr-gcc-ar" REQUIRED)
+find_program(CMAKE_CXX_COMPILER_RANLIB "avr-gcc-ranlib" REQUIRED)
+find_program(CMAKE_C_COMPILER "avr-gcc" REQUIRED)
+find_program(CMAKE_C_COMPILER_AR "avr-gcc-ar" REQUIRED)
+find_program(CMAKE_C_COMPILER_RANLIB "avr-gcc-ranlib" REQUIRED)
+find_program(CMAKE_PROJECT_SIZE "avr-size" REQUIRED)
+find_program(CMAKE_PROJECT_UPLOAD "avrdude" REQUIRED)
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+##########################################################################
+# Extras
+##########################################################################
+function(avr_project_configure MCU CLOCK)
 	add_compile_options(
-		"-mmcu=${MCU_NAME}"
+			"-mmcu=${MCU}"
 	)
 
 	add_compile_definitions(
-		"F_CPU=${CPU_SPEED}"
+		"F_CPU=${CLOCK}"
 	)
 
 	add_link_options(
-		"-mmcu=${MCU_NAME}"
+		"-mmcu=${MCU}"
 	)
-
 endfunction()
 
-function(avr_upload TARGET MCU_NAME)
+function(avr_upload_target TARGET MCU)
+	add_custom_command(
+		TARGET
+			${TARGET}
+		POST_BUILD
+		COMMAND
+			${CMAKE_PROJECT_SIZE} -C;--mcu=${MCU} $<TARGET_FILE:${TARGET}>
+	)
+
 	add_custom_target(
-		${TARGET}_Upload
+		Upload_${TARGET}
 		COMMAND
-			${AVR_UPLOADTOOL} -l upload.log -p ${MCU_NAME} -c avrftdi -U flash:w:${TARGET} -v
-		COMMAND
-			${AVR_SIZE_TOOL} -C;--mcu=${MCU_NAME} ${TARGET} #| grep -vE "\"^\\(|^$$\""
-		DEPENDS ${TARGET}
-		COMMENT "Upload"
+			${CMAKE_PROJECT_UPLOAD} -l upload.log -p ${MCU} -c avrftdi -U flash:w:$<TARGET_FILE:${TARGET}> -v
+		DEPENDS
+			$<TARGET_FILE:${TARGET}>
+		COMMENT
+			"Upload"
 	)
 endfunction()
